@@ -1,0 +1,668 @@
+{
+  "name": "final Lead finder automation",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Enter the place and business type you want to scrape",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Enter the location"
+            },
+            {
+              "fieldLabel": "Enter the business Type"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a7dddfa6-2131-4575-9f92-bbbbe9347847",
+      "name": "On form submission",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        -288
+      ],
+      "webhookId": "3c66ea8c-c7ad-49bc-937f-4e91f8d80f42"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data.results",
+        "options": {}
+      },
+      "id": "642664bb-1dd3-485d-993e-5c4fd46b4773",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1.1,
+      "position": [
+        448,
+        -288
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.website }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "1010995d-959b-438e-a2c0-04540cf67bcd",
+      "name": "Open the website",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1120,
+        -288
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://google-map-scraper1.p.rapidapi.com/api/places/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "={{ $json['Enter the location'] }}{{ $json['Enter the business Type'] }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-rapidapi-host",
+              "value": "google-map-scraper1.p.rapidapi.com"
+            },
+            {
+              "name": "x-rapidapi-key",
+              "value": "ef21bd2b44msh05e52923577fcc6p1b2650jsn860e14bae05a"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "508ee5f7-7a67-4739-9514-a4ca1c54ee1c",
+      "name": "Scrapping google map",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        224,
+        -288
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5dc17cc6-6dfe-4f77-84a4-66d100e0c37c",
+              "name": "place_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "57a36430-2169-495d-baa7-cfc3f6ebe8d0",
+              "name": "name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "12068d4e-84ba-4c80-b9db-9ab94976b600",
+              "name": "address",
+              "value": "={{ $json.address }}",
+              "type": "string"
+            },
+            {
+              "id": "71d9a184-8448-4943-870b-d83af988f81e",
+              "name": "phone",
+              "value": "={{ $json.phone_number }}",
+              "type": "string"
+            },
+            {
+              "id": "2ade86d8-c706-4336-ac85-738a5cfb6627",
+              "name": "website",
+              "value": "={{ $json.website }}",
+              "type": "string"
+            },
+            {
+              "id": "555faeeb-8c53-442e-9976-eb04403d2bb1",
+              "name": "rating",
+              "value": "={{ $json.rating }}",
+              "type": "number"
+            },
+            {
+              "id": "c4c9bdbb-c059-4a88-b12c-df69eb243bed",
+              "name": "reviews",
+              "value": "={{ $json.reviews }}",
+              "type": "number"
+            },
+            {
+              "id": "8f8919da-728c-40cb-8511-ceaf2ec474c5",
+              "name": "maps_url",
+              "value": "={{ $json.url }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        672,
+        -288
+      ],
+      "id": "306a5eaa-656b-4c3d-a7d8-538746994132",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "64d996f7-6bc3-453b-b1b2-188e55cf27c2",
+              "leftValue": "={{ $json.website }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.4,
+      "position": [
+        896,
+        -288
+      ],
+      "id": "fc03fff2-b9ab-4255-b4ae-7576ac29503b",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b2d1007d-5508-429a-95a4-9e679ba229c2",
+              "name": "place_id",
+              "value": "={{ $('Filter').item.json.place_id }}",
+              "type": "string"
+            },
+            {
+              "id": "5f2bff4b-aa13-4f26-bbff-3009e9b2efdc",
+              "name": "name",
+              "value": "={{ $('Filter').item.json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "e7e0fd3d-8908-4db0-b77b-3ebf7abb8b56",
+              "name": "address",
+              "value": "={{ $('Filter').item.json.address }}",
+              "type": "string"
+            },
+            {
+              "id": "da354509-d142-40b9-84a3-3e87179c7b3f",
+              "name": "phone",
+              "value": "={{ $('Filter').item.json.phone }}",
+              "type": "string"
+            },
+            {
+              "id": "c2c64bb8-913d-4939-9630-c0ea4f06a4b8",
+              "name": "website",
+              "value": "={{ $('Filter').item.json.website }}",
+              "type": "string"
+            },
+            {
+              "id": "fc83ff5b-ed17-4b84-86a1-cad09740db23",
+              "name": "email",
+              "value": "={{ (String($json.data || '').match(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}/g) || []).filter(e => !/\\.(png|jpe?g|gif|svg|webp)$/i.test(e) && !/(sentry|wixpress|example)\\./i.test(e))[0] || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "861f9616-6c6b-4782-819c-29dfe07d76f5",
+              "name": "rating",
+              "value": "={{ $('Filter').item.json.rating }}",
+              "type": "number"
+            },
+            {
+              "id": "bdd7384a-070c-4399-be48-bbd6a8964b27",
+              "name": "reviews",
+              "value": "={{ $('Filter').item.json.reviews }}",
+              "type": "number"
+            },
+            {
+              "id": "4b21cada-005b-4d98-9949-b4238bae2d60",
+              "name": "maps_url",
+              "value": "={{ $('Filter').item.json.maps_url }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1344,
+        -288
+      ],
+      "id": "41a8b7fe-a1d8-4996-9c7d-16962f95b55d",
+      "name": "fetch emails from website"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1a6fHZ5zyjGhNDcyu_I6e4FY7d7g13697A4npX8gUwwE",
+          "mode": "list",
+          "cachedResultName": "leads information",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1a6fHZ5zyjGhNDcyu_I6e4FY7d7g13697A4npX8gUwwE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1a6fHZ5zyjGhNDcyu_I6e4FY7d7g13697A4npX8gUwwE/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "address": "={{ $json.address }}",
+            "name_of_business": "={{ $json.name }}",
+            "phone_number": "={{ $json.phone }}",
+            "email ": "={{ $json.email }}",
+            "website": "={{ $json.website }}",
+            "URL": "={{ $json.maps_url }}",
+            "rating": "={{ $json.rating }}",
+            "reviews": "={{ $json.reviews }}"
+          },
+          "matchingColumns": [
+            "address"
+          ],
+          "schema": [
+            {
+              "id": "name_of_business",
+              "displayName": "name_of_business",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "phone_number",
+              "displayName": "phone_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "address",
+              "displayName": "address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email ",
+              "displayName": "email ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "website",
+              "displayName": "website",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "URL",
+              "displayName": "URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "rating",
+              "displayName": "rating",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "reviews",
+              "displayName": "reviews",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1568,
+        -288
+      ],
+      "id": "2b204205-8ad8-433f-9820-807ce2dab224",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "2lO9m4B4LXs8aZS5",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Lead collection through google maps\n",
+        "height": 320,
+        "width": 1464,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        208,
+        -448
+      ],
+      "typeVersion": 1,
+      "id": "a01cd130-46b8-449e-a1ca-c26137dc9ac7",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json['email '] }}",
+        "subject": "={{ 'Quick question for ' + $json.name_of_business}}",
+        "emailType": "text",
+        "message": "=<p>Hi {{ $json['email '] }}team,</p><p>I came across your business on Google Maps and was impressed by your {{ $json.rating }}-star rating. I help local businesses like yours get more customers and would love to share a few ideas.</p><p>Would you be open to a quick 10-minute chat this week?</p><p>Best regards</p>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2016,
+        -384
+      ],
+      "id": "2f042137-0ee8-4289-b3e0-d9cd9ca7b456",
+      "name": "Send a message",
+      "webhookId": "d567abb9-4391-40a9-992b-7fbf9836cb4b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "FvqW07GBPIn6QwoV",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "3cc28322-d31b-41c5-b9dc-12cdea331f8e",
+              "leftValue": "={{ $json['email '] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.4,
+      "position": [
+        1792,
+        -384
+      ],
+      "id": "dcf0eecd-e84a-4e29-b353-41b6b56a1b3b",
+      "name": "has email"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "38425142-58a2-4559-8964-52f08665c42b",
+              "leftValue": "={{ $json.phone_number }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.4,
+      "position": [
+        1792,
+        -192
+      ],
+      "id": "e257445f-257d-470a-91ac-b3c4f07157c3",
+      "name": "has whatsapp number"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "=1326256013907597",
+        "recipientPhoneNumber": "={{ $json.phone_number }}",
+        "textBody": "=<p>Hi {{ $json['email '] }}team,</p><p>I came across your business on Google Maps and was impressed by your {{ $json.rating }}-star rating. I help local businesses like yours get more customers and would love to share a few ideas.</p><p>Would you be open to a quick 10-minute chat this week?</p><p>Best regards</p>",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        2016,
+        -192
+      ],
+      "id": "a91e7398-1f07-4ce0-a6ac-03de0ad88a0d",
+      "name": "Send message",
+      "webhookId": "fa6f5498-d7f6-4be6-8da0-2bb108e26bc0",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "O3GBSoEfxaircc2X",
+          "name": "WhatsApp account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Scrapping google map",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Open the website": {
+      "main": [
+        [
+          {
+            "node": "fetch emails from website",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrapping google map": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Open the website",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "fetch emails from website": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "has email",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "has whatsapp number",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "has email": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "has whatsapp number": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "fd7049eb-f369-43a6-802f-e89582742fe8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9e6700062988323d2b67138d0831756e581f3ea59ac6bf0fa971620655059c42"
+  },
+  "nodeGroups": [],
+  "id": "7dCWwTJNwQkqyJGr",
+  "tags": []
+}
